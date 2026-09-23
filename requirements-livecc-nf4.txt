@@ -1,0 +1,10 @@
+# CUDA/NF4 kernel-tested candidate, full model inference validation tracked separately.
+# Install torch/torchvision from https://download.pytorch.org/whl/cu121 first.
+torch==2.5.1+cu121
+torchvision==0.20.1+cu121
+transformers==4.52.4
+accelerate==1.7.0
+bitsandbytes==0.46.0
+av==12.0.0
+psutil==7.2.2
+hf-xet==1.1.5

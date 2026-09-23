@@ -1,0 +1,59 @@
+project:
+  run_name: run
+  output_dir: ./outputs
+
+input:
+  video_path: ./web_uploads/sample.mp4
+
+sampling:
+  fps: 10
+  image_ext: .jpg
+
+# CluFrame-style redundancy removal. The web UI enables this automatically
+# in the "CluFrame + LLMVS 키프레임" mode.
+preprocessing:
+  enabled: false
+  sample_fps: 10
+  max_candidates: 30
+  feature_backend: lightweight   # lightweight | efficientnet_b0
+  resize_width: 320
+  min_total_motion: 1500.0
+  min_motion_frames: 2
+
+segment:
+  segment_sec: 5.0
+  representative_frame: middle
+
+caption:
+  enabled: true
+  backend: llava
+  model_id: llava-hf/llava-1.5-7b-hf
+  prompt: "USER: <image>\nDescribe this video frame in one concise sentence.\nASSISTANT:"
+  max_new_tokens: 64
+  cache: true
+  cache_dir: null
+
+scoring:
+  backend: llama2
+  model_id: meta-llama/Llama-2-13b-chat-hf
+  window_size: 7
+  max_new_tokens: 32
+  use_quantization_4bit: true
+  cache: true
+  cache_dir: null
+  checkpoint_path: Summaries/summe_head2_layer3/summe/summe_split4/best_rho_model/epoch=31-val_sRho=0.343.ckpt
+
+global_context:
+  mode: temporal_smoothing
+  smoothing_window: 3
+
+selection:
+  mode: top_k
+  top_k: 10
+  summary_ratio: 0.15
+  threshold: 0.65
+
+output:
+  save_selected_frames: true
+  save_graph: true
+  save_html_report: true

@@ -1,185 +1,269 @@
-# 📱 AI 기반 비대면 제품 검수 시스템
+# LLMVS-style Video Summary Test Module
 
-## 📌 프로젝트 개요
-본 프로젝트는 스마트폰 카메라를 활용한 비대면 제품 검수 시스템을 목표로 한다.  
-사용자가 촬영한 이미지와 제조사가 제공한 정상 데이터를 비교하여 실시간으로 양품/불량 여부를 판별한다.
+이 프로젝트는 LLMVS 논문 구조를 테스트 가능한 형태로 축소한 모듈형 파이프라인입니다.
 
-별도의 전문 장비 없이 누구나 쉽게 사용할 수 있으며, 다양한 산업군에 적용 가능한 범용 구조를 지향한다.
+사용 모델:
 
----
+- Caption generator: `llava-hf/llava-1.5-7b-hf`
+- Local importance scorer: `meta-llama/Llama-2-13b-chat-hf`
 
-## 🎯 개발 목표
+논문 완전 재현은 아니고, 다음 흐름을 구현합니다.
 
-### 1. 신뢰성 있는 비대면 검수 시스템
-- 정상 제품 데이터와 사용자 촬영 이미지를 비교
-- AI 기반으로 양품 / 불량 자동 판별
-
-### 2. 범용적 아키텍처
-- 특정 제품에 종속되지 않음
-- 데이터셋 교체만으로 다양한 산업군 적용 가능 (식품, 공산품, 부품 등)
-
-### 3. 사용자 편의성
-- 스마트폰 카메라만으로 검사 가능
-- 직관적인 UI 제공
-
----
-
-## 🛠️ 개발 내용
-
-### 1. 딥러닝 기반 판별 엔진
-- 이미지 기반 결함 탐지 모델 개발
-- 주요 결함:
-  - 스크래치
-  - 변색
-  - 손상
-- 모델: TBD
-
----
-
-### 2. 객체 탐지 (Object Detection)
-- 이미지 내 제품 위치 탐지
-- 결함 위치 시각화 기능 제공
-- 모델: TBD
-
----
-
-### 3. 서버 API 구축
-- 이미지 수신 및 AI 추론 처리
-- 결과를 JSON 형태로 반환
-- 프레임워크: TBD
-
----
-
-### 4. 모바일 애플리케이션
-- 이미지 촬영 및 업로드 기능
-- 결과 확인 UI
-- 간단한 전처리 기능 포함
-
----
-
-### 5. 데이터 관리 시스템
-- 제품 ID 기반 데이터 관리
-- 정상 데이터 / 불량 데이터 분리 저장
-- 결과 기록 및 조회 기능 제공
-
----
-
-## 📈 기대 효과
-
-- 사용자 편의성 향상 → 전문 지식 없이도 즉시 판별 가능  
-- 시간 및 비용 절감 → 수작업 검사 대체  
-- 일관된 품질 기준 확보 → 사람 의존 감소  
-- 확장성 확보 → 다양한 산업군 적용 가능  
-
----
-
-## 📋 요구사항
-
-### ✅ 기능적 요구사항 (Functional Requirements)
-
-#### 1. 사용자 입력
-- 사용자는 이미지 촬영 또는 업로드 가능
-- 입력 이미지는 서버로 전송 가능해야 함
-
-#### 2. 이미지 전송 및 처리
-- 앱 → 서버 이미지 전송
-- 서버에서 이미지 저장 및 처리
-
-#### 3. 객체 판별
-- AI 모델 기반 이미지 분석
-- 정상 / 비정상 판별 수행
-
-#### 4. 결과 반환
-- 서버 → 앱 결과 전달
-- 앱에서 직관적으로 표시
-
-#### 5. 결과 기록
-- 판별 결과 저장
-- 과거 결과 조회 가능
-
-#### 6. UI 기능
-- 직관적인 인터페이스 제공
-- 결과 시각적 표현
-
----
-
-### ⚙️ 품질 요구사항 (Non-Functional Requirements)
-
-#### 1. 운영 환경
-- Android 환경 지원
-- 관리자 웹: 최신 브라우저 지원
-
-#### 2. 성능 및 신뢰성
-- 응답 시간: 5초 이내
-- 24시간 운영 가능
-- 동시 사용자 1000명 이상 지원
-
-#### 3. 보안
-- 사용자 데이터 암호화 저장
-- 로그인 기능 제공
-
----
-
-### 🔗 인터페이스 요구사항
-
-#### 1. 사용자 인터페이스
-- 색상 및 아이콘 기반 결과 표시
-
-#### 2. 외부 시스템 인터페이스
-- REST API 기반 서버 통신
-
----
-
-## 🧩 시스템 아키텍처 (개요)
-
-```
-[Mobile App]
-    ↓
-[API Server]
-    ↓
-[AI Inference Engine]
-    ↓
-[Database]
+```text
+Video
+→ 1fps frame sampling
+→ 5 sec segment building
+→ representative frame captioning with LLaVA-1.5-7B
+→ local window scoring with Llama-2-13B-chat
+→ optional Llama hidden embedding extraction
+→ temporal smoothing
+→ top-k summary segment selection
+→ JSON / plot / HTML report export
 ```
 
----
-
-## 🧪 사용 시나리오
-
-1. 사용자가 앱에서 제품 촬영  
-2. 이미지 서버 전송  
-3. AI 모델이 이미지 분석  
-4. 정상 / 비정상 판별  
-5. 결과를 앱에 표시  
-
----
-
-## 🚀 실행 방법
+## 1. 설치
 
 ```bash
-# TBD
+py -3.11 -m venv .venv
+.\.venv\Scripts\Activate.ps1  # Windows: .venv\Scripts\activate
+python -m pip install --upgrade pip setuptools wheel
+python -m pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+pip install -U hf_xet
+pip install -r requirements.txt
+```
+
+## 2. Hugging Face Token
+
+이 버전은 토큰을 코드나 config에 저장하지 않습니다. 프로그램 실행 시 터미널에서 직접 입력받습니다. 입력값은 `getpass`로 처리되어 화면에 표시되지 않고, 파일로 저장되지 않습니다.
+
+```bash
+python main.py --config config.yaml
+```
+
+실행 후 다음 문구가 나오면 Hugging Face token을 입력하세요. 공개 모델만 테스트하거나 이미 캐시된 모델을 쓸 경우 Enter로 넘어갈 수 있습니다.
+
+```text
+Hugging Face token 입력(없으면 Enter, 입력값은 저장되지 않음):
+```
+
+입력한 토큰은 모델 다운로드/로딩 함수에만 인자로 전달되며, `config.yaml`, `metadata.json`, `scores.json`, cache 파일에 기록되지 않습니다.
+
+## 3. 입력 영상 배치
+
+```text
+input/sample.mp4
+```
+
+또는 `config.yaml`의 `input.video_path`를 수정합니다.
+
+## 4. 실행
+
+```bash
+python main.py --config config.yaml
+```
+
+## 5. 결과물
+
+```text
+outputs/{run_name}/metadata.json
+outputs/{run_name}/frames.json
+outputs/{run_name}/segments.json
+outputs/{run_name}/captions.json
+outputs/{run_name}/scores_raw.json
+outputs/{run_name}/scores.json
+outputs/{run_name}/summary.json
+outputs/{run_name}/llm_embeddings.npy
+outputs/{run_name}/score_plot.png
+outputs/{run_name}/report.html
+outputs/{run_name}/selected_frames/
+```
+
+## 6. 주요 설정
+
+```yaml
+sampling:
+  fps: 1
+
+segment:
+  segment_sec: 5
+
+scoring:
+  window_size: 7
+  use_quantization_4bit: true
+  extract_embeddings: true
+
+selection:
+  mode: "top_k"
+  top_k: 5
+```
+
+## 7. 하드웨어 주의
+
+LLaVA-1.5-7B와 Llama-2-13B-chat을 같이 쓰므로 GPU VRAM 사용량이 큽니다.
+기본 설정은 Llama-2를 4bit quantization으로 로드합니다.
+VRAM이 부족하면 다음을 시도하세요.
+
+- 짧은 영상으로 먼저 테스트
+- `sampling.fps`를 낮추기
+- `segment.segment_sec`를 늘리기
+- `scoring.extract_embeddings`를 `false`로 변경
+- Llama-2-13B 대신 7B 또는 다른 instruct model로 교체
+
+## 8. 모듈 구조
+
+```text
+modules/
+├── video_loader.py
+├── frame_sampler.py
+├── segment_builder.py
+├── caption_generator.py
+├── llm_scorer.py
+├── global_context.py
+├── summary_selector.py
+├── result_writer.py
+└── visualizer.py
+```
+
+## 9. 한계
+
+- LLMVS 논문처럼 self-attention global aggregator를 학습하지 않습니다.
+- SumMe/TVSum benchmark 평가 코드는 포함하지 않습니다.
+- Llama hidden embedding은 저장하지만, 현재 MVP에서는 학습형 aggregator 입력으로만 보존합니다.
+- LLaVA caption hallucination이 있을 수 있으므로 report.html에서 caption과 대표 프레임을 같이 확인해야 합니다.
+
+## 실행 시간 기록
+
+프로그램은 실행 시작 시각과 종료 시각, 총 소요 시간을 자동으로 기록합니다.
+
+터미널 출력 예시:
+
+```text
+[START] 시작 시간: 2026-05-29T18:12:03
+[END] 종료 시간: 2026-05-29T18:28:41
+[TIME] 총 소요 시간: 00:16:38.124 (998.124초)
+```
+
+또한 다음 파일에 실행 시간 정보가 저장됩니다. Hugging Face token 값은 저장하지 않습니다.
+
+```text
+outputs/{run_name}/runtime.json
+```
+
+저장 예시:
+
+```json
+{
+  "started_at": "2026-05-29T18:12:03",
+  "ended_at": "2026-05-29T18:28:41",
+  "elapsed_seconds": 998.124,
+  "elapsed_hms": "00:16:38.124",
+  "status": "success"
+}
 ```
 
 ---
 
-## 🧱 기술 스택
+## Web UI 사용법
 
-- Mobile: TBD  
-- Backend: TBD  
-- AI Model: TBD  
-- Database: TBD  
-- Deployment: TBD  
+이 버전에는 `web_app.py`가 추가되어 브라우저에서 영상을 업로드하거나 폴더를 감시하면서 키프레임을 추출할 수 있습니다.
+
+### 1. 설치
+
+```bash
+pip install -r requirements.txt
+```
+
+### 2. 웹 UI 실행
+
+```bash
+streamlit run web_app.py
+```
+
+브라우저가 열리면 다음 두 가지 방식 중 하나를 사용할 수 있습니다.
+
+### 방식 A. 파일 업로드 실행
+
+1. `파일 업로드 실행` 탭에서 영상 파일을 업로드합니다.
+2. 사이드바에서 모드를 선택합니다.
+   - `빠른 CV 키프레임 모드`: LLaVA/Llama 없이 프레임 변화량 기반으로 빠르게 키프레임 추출
+   - `Full LLMVS 모드`: 기존 LLaVA caption + Llama importance scoring 파이프라인 실행
+3. `키프레임 추출 시작` 버튼을 누릅니다.
+4. 결과 이미지, score plot, ZIP 다운로드 버튼이 표시됩니다.
+
+### 방식 B. 폴더 감시 실행
+
+1. 프로젝트 폴더 안의 `watch_videos/` 폴더에 영상 파일을 넣습니다.
+2. 웹 UI의 `폴더 감시 실행` 탭으로 이동합니다.
+3. `대기 영상 한 번 처리`를 누르면 아직 처리하지 않은 파일만 처리합니다.
+4. `켜두고 자동 스캔`을 켜면 브라우저 세션이 열려 있는 동안 주기적으로 새 영상을 확인합니다.
+
+### 출력 위치
+
+모든 결과는 `outputs/<영상이름_날짜시간>/` 아래에 저장됩니다.
+
+주요 결과물:
+
+- `frames/`: 샘플링된 프레임
+- `selected_frames/`: 최종 선택된 키프레임
+- `summary.json`: 선택된 키프레임 정보
+- `scores.json`: 프레임/세그먼트 점수
+- `score_plot.png`: 중요도 점수 그래프
+- `report.html`: Full LLMVS 모드 실행 시 HTML 리포트
+
+### Hugging Face token
+
+Full LLMVS 모드에서 gated model을 사용할 경우 사이드바의 `Hugging Face token` 입력칸에 토큰을 넣으세요. 이 값은 파일에 저장하지 않고 실행 중 메모리로만 전달됩니다.
+
+### 권장 사용
+
+GPU가 없거나 빠르게 UI 동작만 확인하려면 먼저 `빠른 CV 키프레임 모드`로 테스트하세요. LLaVA/Llama 기반 Full LLMVS 모드는 모델 다운로드와 로딩 시간이 길고 GPU 메모리를 많이 사용합니다.
+
+## 10. 웹 UI 요약 방식 선택
+
+`web_app.py` 사이드바에서 다음 방식 중 하나를 선택할 수 있습니다.
+
+1. **K-Means clustering 키프레임**
+   - 샘플링된 프레임에서 색상/에지/썸네일 기반 특징을 추출합니다.
+   - K-Means로 비슷한 장면을 묶고 각 클러스터 중심에 가장 가까운 프레임을 대표 키프레임으로 저장합니다.
+   - LLaVA/Llama 모델을 로딩하지 않으므로 빠르게 테스트할 수 있습니다.
+
+2. **LLaVA/Llama 모듈 키프레임**
+   - LLaVA로 대표 프레임 caption을 생성합니다.
+   - Llama 계열 모델로 window 기반 중요도 점수를 계산합니다.
+   - 점수 기준으로 top-k, top-ratio, threshold 선택을 수행합니다.
+
+3. **빠른 변화량 키프레임**
+   - 모델 없이 프레임 간 히스토그램 변화량이 큰 장면을 선택하는 간단한 테스트 모드입니다.
 
 ---
 
-## 📌 향후 발전 방향
+## Hugging Face 모델 캐시 고정
 
-- 실시간 영상 기반 검사 기능 추가
-- 불량 유형 자동 분류
-- Edge AI 적용 (온디바이스 추론)
+웹 UI 사이드바의 **모델 캐시 설정**에서 `Hugging Face cache 위치`를 지정하고 **캐시 위치 저장/적용**을 누르면, 이후 실행에서도 같은 폴더를 계속 사용합니다.
 
----
+Windows 권장 예시:
 
-## 👥 팀
+```text
+D:\huggingface_cache
+```
 
-- TBD
+저장 후 앱은 내부적으로 다음 경로를 고정합니다.
+
+```text
+HF_HOME=D:\huggingface_cache
+HF_HUB_CACHE=D:\huggingface_cache\hub
+HF_DATASETS_CACHE=D:\huggingface_cache\datasets
+```
+
+효과:
+
+- LLaVA/Llama 모델 파일을 한 위치에 저장합니다.
+- 새 영상을 분석해도 기존 모델 캐시를 재사용합니다.
+- 매번 30GB 모델을 다시 다운로드하는 상황을 줄입니다.
+- 결과 파일(`captions.json`, `scores.json`, `selected_frames/`)은 영상별로 새로 생성됩니다.
+
+주의:
+
+- 캐시 고정은 다운로드 반복을 막는 용도입니다.
+- 앱을 새로 켤 때 모델을 RAM/VRAM에 올리는 **로딩 시간**은 여전히 발생할 수 있습니다.
+- `app_settings.json`에 캐시 경로만 저장되며 Hugging Face token은 저장하지 않습니다.

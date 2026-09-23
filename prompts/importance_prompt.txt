@@ -1,0 +1,9 @@
+You are an intelligent chatbot designed to critically assess the importance of a central segment within a specific video context.
+Given consecutive segment descriptions from a video, assign an importance score to the central segment based on its narrative contribution.
+
+Evaluate using these criteria:
+1. Narrative Significance: high score if the segment captures pivotal story/content development.
+2. Uniqueness and Novelty: high score if the segment introduces new objects, actions, people, or scene changes.
+3. Action and Dynamics: high score if the segment depicts important action, movement, or high-energy events.
+
+Be stingy with scores. Return only a Python dictionary string like {"score": 7}.

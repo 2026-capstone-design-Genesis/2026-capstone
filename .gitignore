@@ -1,0 +1,69 @@
+# Secrets and machine-local settings
+.env
+.env.*
+!.env.example
+app_settings.json
+
+# Python environments, caches, and test artifacts
+.venv/
+.venv-*/
+venv/
+.local-realtime/
+.uv-cache/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.log
+
+# JavaScript dependencies and build/test output
+node_modules/
+dist/
+coverage/
+playwright-report/
+test-results/
+
+# Downloaded model data and checkpoints
+.livecc/
+models/
+Summaries/
+*.ckpt
+*.pt
+*.pth
+*.bin
+*.safetensors
+
+# Runtime inputs, recordings, uploads, and generated analysis
+input/*
+!input/.gitkeep
+watch_videos/*
+!watch_videos/.gitkeep
+web_uploads/*
+!web_uploads/.gitkeep
+outputs/*
+!outputs/.gitkeep
+
+# Video/audio assets and local archives are not source code
+*.mp4
+*.m4v
+*.mov
+*.avi
+*.mkv
+*.webm
+*.wav
+*.mp3
+*.m4a
+*.zip
+*.7z
+*.tar
+*.gz
+
+# Editor and operating-system metadata
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+Desktop.ini

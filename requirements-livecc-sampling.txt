@@ -1,0 +1,3 @@
+# Install alongside requirements-realtime.txt for clip decoding only.
+# Model inference requirements must be validated separately; see LIVECC_SETUP.md.
+av==12.0.0

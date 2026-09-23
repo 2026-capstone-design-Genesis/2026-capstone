@@ -1,0 +1,11 @@
+# 기존 모델 환경과 분리해 설치하는 React 실시간 서버용 의존성
+fastapi>=0.135,<1
+uvicorn>=0.34,<1
+websockets>=15,<17
+numpy>=1.26,<3
+opencv-python-headless>=4.10,<5
+pillow>=10.4,<13
+cryptography>=44,<49
+httpx>=0.28,<1
+higra==0.6.13
+tensorflow==2.21.0
